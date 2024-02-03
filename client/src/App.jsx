@@ -128,7 +128,7 @@
 // }
 
 // export default App;
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState,useRef } from "react";
 import { io } from "socket.io-client";
 import Session from "./Session";
 
@@ -136,7 +136,8 @@ function App() {
   const [socket, setSocket] = useState(null);
   const [msg, setMsg] = useState("");
   const [room, setRoom] = useState("");
-  const [socketId, setSocketId] = useState("");
+  const socketId = useRef("");
+  
   const [messages, setMessages] = useState({});
   const [isSessionActive, setIsSessionActive] = useState(false);
   const [isHost, setIsHost] = useState(false);
@@ -146,7 +147,8 @@ function App() {
     const newSocket = io("http://localhost:3000");
 
     newSocket.on("connect", () => {
-      setSocketId(newSocket.id);
+      // setSocketId(newSocket.id);
+      socketId.current = newSocket.id;
     });
 
     newSocket.on("received-message", (data) => {
@@ -160,24 +162,29 @@ function App() {
       setIsSessionActive(true);
       setIsHost(true);
       setRoom(key);
+      // room.current = key;
     });
 
     newSocket.on("join_success", (key) => {
       setIsSessionActive(true);
       setRoom(key);
+      // room.current = key;
     });
 
     newSocket.on("join_fail", (message) => {
       alert(message);
       setIsSessionActive(false);
       setRoom("");
+      // room.current = "";
     });
 
     newSocket.on("disconnect", () => {
       setSocket(null);
-      setSocketId("");
+      // setSocketId("");
+      socketId.current = "";
       setIsSessionActive(false);
       setRoom("");
+      // room.current = "";
       setMessages({});
       setIsHost(false);
     });
@@ -236,7 +243,7 @@ function App() {
       {isSessionActive && (
         <div>
           <div className="socket_print">
-            <h1>Socket ID: {socketId}</h1>
+            <h1>Socket ID: {socketId.current}</h1>
             {isHost && <h2>Room Key: {room}</h2>}
           </div>
           <form>
