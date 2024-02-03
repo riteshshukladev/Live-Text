@@ -1,32 +1,25 @@
-import React,{useState} from 'react'
 
-const Session = ({onGenrateNewKey , onJoinSessionUsingkey})=>{
-    const[sessionKey, setSessionKey] = useState('');
 
-    const handleCreateNewKey = () => {
-        if(onGenrateNewKey){
-            onGenrateNewKey();
-        }
-    }
+import React, { useState } from 'react';
 
-    const HandleJoinSession = () => {
-        if(onJoinSessionUsingkey){
-            onJoinSessionUsingkey(sessionKey);
-        }
-    }
-  return (
-    <div>
-        <button onClick={handleCreateNewKey}>Generate New Key</button>
+const Session = ({ onGenerateNewKey, onJoinSessionUsingKey, onLeaveSession }) => {
+    const [sessionKey, setSessionKey] = useState('');
+
+    return (
         <div>
-            <input type="text" 
-            placeholder="Enter Key" 
-            value={sessionKey}
-            onChange={(e) => setSessionKey(e.target.value)}
-            />
-            <button onClick={HandleJoinSession}>Join Session</button>
+            <button onClick={onGenerateNewKey}>Generate New Key</button>
+            <div>
+                <input 
+                    type="text" 
+                    placeholder="Enter Key" 
+                    value={sessionKey}
+                    onChange={(e) => setSessionKey(e.target.value)}
+                />
+                <button onClick={() => onJoinSessionUsingKey(sessionKey)}>Join Session</button>
+            </div>
+            <button onClick={onLeaveSession}>Leave Session</button>
         </div>
-    </div>
-  )
-}
+    );
+};
 
 export default Session;

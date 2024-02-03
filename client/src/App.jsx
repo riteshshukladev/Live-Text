@@ -1,309 +1,266 @@
-// import React, { useCallback, useEffect, useState, useMemo } from "react";
+
+
+
+
+// import React, { useEffect, useState } from "react";
 // import { io } from "socket.io-client";
+// import Session from "./Session";
 
 // function App() {
-//   // Makes a coonection to the server socket
-//   // const socket = ("http://localhost:3000");
-
-//   // this allow us to memoize the socket instance so that it will not be recreated on every keystroke of the input field
-//   const socket = useMemo(() => io("http://localhost:3000"), []);
-//   const [msg, setMsg] = useState("");
-//   const [room, setRoom] = useState("");
-//   const [socketId, setSocketId] = useState("");
-//   const [showMessage, setshowMessage] = useState([]);
-
-//   useEffect(() => {
-//     // When the socket connects to the socketIO server successfully,it logs the socket id
-//     socket.on("connect", () => {
-//       setSocketId(socket.id);
-//       console.log("socket connected");
-//       console.log("socket id:", socket.id);
-//     });
-//     // custom event listener defined or emitted in the server
-//     // The event name in server and client should match in the case of the custom event
-//     socket.on("namaste", (data) => {
-//       console.log(data);
-//     });
-
-//     socket.on("recieved-message", (data) => {
-//       // setshowMessage([...showMessage,data]);
-//       console.log(data);
-//       setshowMessage((prev) => [...prev, data]);
-//     });
-//     return () => {
-//       socket.disconnect();
-//     };
-//   }, []);
-
-//   const btnHandler = (e) => {
-//     e.preventDefault();
-//     // used to send the message to the server, message is the event name(inbuild event should match with the server event name)
-//     socket.emit("message", { msg, room });
-//     setMsg("");
-//   };
-
-//   return (
-//     <div>
-//       <div className="socket_print">
-//         <h1>Socket id: {socketId}</h1>
-//       </div>
-//       <form action="" onChange={btnHandler}>
-//         <input
-//           type="text"
-//           name="msg"
-//           id=""
-//           value={msg}
-//           onChange={(e) => setMsg(e.target.value)}
-//         />
-//         <input
-//           type="text"
-//           name="room"
-//           id=""
-//           value={room}
-//           onChange={(e) => setRoom(e.target.value)}
-//         />
-//         <button type="submit">send</button>
-//       </form>
-//       <div>
-//         {showMessage.map((data, index) => {
-//           return (
-//             <div key={index}>
-//               <p>{data}</p>
-//             </div>
-//           );
-//         })}
-//       </div>
-//     </div>
-//   );
-// }
-
-// export default App;
-
-
-// import React, { useCallback, useEffect, useState, useMemo } from "react";
-// import { io } from "socket.io-client";
-
-// function App() {
-//   const socket = useMemo(() => io("http://localhost:3000"), []);
-//   const [msg, setMsg] = useState("");
-//   const [room, setRoom] = useState("");
-//   const [socketId, setSocketId] = useState("");
-//   const [showMessage, setshowMessage] = useState([]);
-
-//   useEffect(() => {
-//     socket.on("connect", () => {
-//       setSocketId(socket.id);
-//     });
-
-//     socket.on("recieved-message", (data) => {
-//       setshowMessage((prev) => [...prev, data]);
-//     });
-
-//     return () => {
-//       socket.disconnect();
-//     };
-//   }, []);
-
-//   const handleMsgChange = (e) => {
-//     const newMsg = e.target.value;
-//     setMsg(newMsg);
-//     socket.emit("message", { msg: newMsg, room });
-//   };
-
-//   return (
-//     <div>
-//       <div className="socket_print">
-//         <h1>Socket id: {socketId}</h1>
-//       </div>
-//       <form>
-//         <input
-//           type="text"
-//           name="msg"
-//           value={msg}
-//           onChange={handleMsgChange}
-//         />
-//         <input
-//           type="text"
-//           name="room"
-//           value={room}
-//           onChange={(e) => setRoom(e.target.value)}
-//         />
-//       </form>
-//       <div>
-//         {showMessage.map((data, index) => (
-//           <div key={index}>
-//             <p>{data}</p>
-//           </div>
-//         ))}
-//       </div>
-//     </div>
-//   );
-// }
-
-// export default App;
-
-
-import React, { useEffect, useState, useMemo } from "react";
-import { io } from "socket.io-client";
-import Session from "./Session";
-
-function App() {
-  const socket = useMemo(() => io("http://localhost:3000"), []);
-  const [msg, setMsg] = useState("");
-  const [room, setRoom] = useState("");
-  const [socketId, setSocketId] = useState("");
-  const [messages, setMessages] = useState({});
-
-  useEffect(() => {
-    socket.on("connect", () => {
-      setSocketId(socket.id);
-    });
-
-    socket.on("recieved-message", (data) => {
-      setMessages(prevMessages => ({
-        ...prevMessages,
-        [data.senderId]: data.msg
-      }));
-    });
-
-    return () => {
-      socket.disconnect();
-    };
-  }, []);
-
-  const handleMsgChange = (e) => {
-    const newMsg = e.target.value;
-    setMsg(newMsg);
-    socket.emit("message", { msg: newMsg, room, senderId: socket.id });
-  };
-
-const onGenrateNewKey = () => {
-  if(socket && socket.connected){
-    socket.emit('generate_key');
-    socket.on('key_generated', (key) => {
-      console.log('key', key);
-    });
-  }
-  else{
-    console.log('failure in connection');
-  }
-}
-
-const onJoinSessionUsingkey = (key) => {
-
-  if(socket && socket.connected){
-    socket.emit('join_session', key);
-    console.log(`key ${key} is sent to the server`);
-  }
-  else{
-    console.log('failure in connection');
-  }
-}
-  
-
-  return (
-    <div>
-      <Session onGenrateNewKey={onGenrateNewKey} onJoinSessionUsingkey={onJoinSessionUsingkey}/>
-      <div className="socket_print">
-        <h1>Socket id: {socketId}</h1>
-      </div>
-      <form>
-        <input
-          type="text"
-          name="msg"
-          value={msg}
-          onChange={handleMsgChange}
-        />
-        <input
-          type="text"
-          name="room"
-          value={room}
-          onChange={(e) => setRoom(e.target.value)}
-          
-        />
-      </form>
-      <div>
-        {Object.entries(messages).map(([senderId, message]) => (
-          <div key={senderId}>
-            <p>{senderId}  :  {message}</p>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-export default App;
-
-
-// import React, { useEffect, useState, useMemo } from "react";
-// import { io } from "socket.io-client";
-// import { v4 as uuidv4 } from 'uuid'; // UUID for generating unique keys
-
-// function App() {
-//   const socket = useMemo(() => io("http://localhost:3000"), []);
+//   const [socket, setSocket] = useState(null);
 //   const [msg, setMsg] = useState("");
 //   const [room, setRoom] = useState("");
 //   const [socketId, setSocketId] = useState("");
 //   const [messages, setMessages] = useState({});
+//   const [isSessionActive, setIsSessionActive] = useState(false);
 
 //   useEffect(() => {
-//     socket.on("connect", () => {
-//       setSocketId(socket.id);
+//     const newSocket = io("http://localhost:3000");
+
+//     newSocket.on("connect", () => {
+//       setSocketId(newSocket.id);
 //     });
 
-//     socket.on("received-message", (data) => {
+//     newSocket.on("received-message", (data) => {
 //       setMessages(prevMessages => ({
 //         ...prevMessages,
 //         [data.senderId]: data.msg
 //       }));
 //     });
 
+//     newSocket.on("key_generated", (key) => {
+//       setIsSessionActive(true);
+//       setRoom(key);
+//     });
+
+//     newSocket.on("join_success", (partnerSocketId) => {
+//       setIsSessionActive(true);
+//       setRoom(partnerSocketId);
+//       // You can add additional logic here if needed
+//     });
+
+//     newSocket.on("join_fail", (message) => {
+//       alert(message); // Display the failure message to the user
+//       setIsSessionActive(false);
+//       setRoom("");
+//     });
+
+//     newSocket.on("disconnect", () => {
+//       setSocket(null);
+//       setSocketId("");
+//       setIsSessionActive(false);
+//       setRoom("");
+//       setMessages({});
+//     });
+
+//     setSocket(newSocket);
+
 //     return () => {
-//       socket.disconnect();
+//       newSocket.disconnect();
 //     };
 //   }, []);
 
 //   const handleMsgChange = (e) => {
 //     const newMsg = e.target.value;
 //     setMsg(newMsg);
-//     socket.emit("message", { msg: newMsg, room, senderId: socket.id });
+//     if (socket && room) {
+//       socket.emit("message", { msg: newMsg, room, senderId: socket.id });
+//     }
 //   };
 
-//   const generateKey = () => {
-//     const newKey = uuidv4();
-//     setRoom(newKey);
+//   const onGenerateNewKey = () => {
+//     if (socket) {
+//       socket.emit('generate_key', socket.id);
+//     }
+//   };
+
+//   const onJoinSessionUsingKey = (key) => {
+//     if (socket) {
+//       socket.emit('join_session', key);
+//     }
+//   };
+
+//   const onLeaveSession = () => {
+//     if (socket) {
+//       socket.disconnect();
+//       setSocket(null);
+//       setIsSessionActive(false);
+//     }
 //   };
 
 //   return (
 //     <div>
-//       <div className="socket_print">
-//         <h1>Socket id: {socketId}</h1>
-//         <button onClick={generateKey}>Generate Key</button>
-//         <input
-//           type="text"
-//           placeholder="Enter Key to Join Room"
-//           value={room}
-//           onChange={(e) => setRoom(e.target.value)}
-//         />
-//       </div>
-//       <form>
-//         <input
-//           type="text"
-//           name="msg"
-//           value={msg}
-//           onChange={handleMsgChange}
-//         />
-//       </form>
-//       <div>
-//         {Object.entries(messages).map(([senderId, message]) => (
-//           <div key={senderId}>
-//             <p>{senderId}  :  {message}</p>
+//       <Session 
+//         onGenerateNewKey={onGenerateNewKey} 
+//         onJoinSessionUsingKey={onJoinSessionUsingKey}
+//         onLeaveSession={onLeaveSession}
+//       />
+//       {isSessionActive && (
+//         <div>
+//           <div className="socket_print">
+//             <h1>Socket id: {socketId}</h1>
 //           </div>
-//         ))}
-//       </div>
+//           <form>
+//             <input
+//               type="text"
+//               name="msg"
+//               value={msg}
+//               onChange={handleMsgChange}
+//             />
+//             <input
+//               type="text"
+//               name="room"
+//               value={room}
+//               onChange={(e) => setRoom(e.target.value)}
+//             />
+//           </form>
+//           <div>
+//             {Object.entries(messages).map(([senderId, message]) => (
+//               <div key={senderId}>
+//                 <p>{senderId}: {message}</p>
+//               </div>
+//             ))}
+//           </div>
+//         </div>
+//       )}
 //     </div>
 //   );
 // }
 
 // export default App;
+import React, { useEffect, useState } from "react";
+import { io } from "socket.io-client";
+import Session from "./Session";
+
+function App() {
+  const [socket, setSocket] = useState(null);
+  const [msg, setMsg] = useState("");
+  const [room, setRoom] = useState("");
+  const [socketId, setSocketId] = useState("");
+  const [messages, setMessages] = useState({});
+  const [isSessionActive, setIsSessionActive] = useState(false);
+  const [isHost, setIsHost] = useState(false);
+
+  useEffect(() => {
+    
+    const newSocket = io("http://localhost:3000");
+
+    newSocket.on("connect", () => {
+      setSocketId(newSocket.id);
+    });
+
+    newSocket.on("received-message", (data) => {
+      setMessages(prevMessages => ({
+        ...prevMessages,
+        [data.senderId]: [ data.msg]
+      }));
+    });
+
+    newSocket.on("key_generated", (key) => {
+      setIsSessionActive(true);
+      setIsHost(true);
+      setRoom(key);
+    });
+
+    newSocket.on("join_success", (key) => {
+      setIsSessionActive(true);
+      setRoom(key);
+    });
+
+    newSocket.on("join_fail", (message) => {
+      alert(message);
+      setIsSessionActive(false);
+      setRoom("");
+    });
+
+    newSocket.on("disconnect", () => {
+      setSocket(null);
+      setSocketId("");
+      setIsSessionActive(false);
+      setRoom("");
+      setMessages({});
+      setIsHost(false);
+    });
+
+    setSocket(newSocket);
+
+    return () => {
+      newSocket.disconnect();
+    };
+  }, []);
+
+ 
+
+  const handleMsgChange = (e) => {
+    const newMsg = e.target.value;
+    setMsg(newMsg);
+    if (socket && room && newMsg.trim()) {
+      socket.emit("message", { msg: newMsg, room, senderId: socket.id });
+    }
+  };
+
+ 
+
+  const  onGenerateNewKey = () => {
+    if (socket) {
+      socket.emit('generate_key');
+    }
+  };
+  
+
+  const onJoinSessionUsingKey = (key) => {
+    if (socket) {
+      socket.emit('join_session', key);
+    }
+  };
+
+  const onLeaveSession = () => {
+    if (socket && room) {
+      socket.emit('leave_session', room);
+      setIsSessionActive(false);
+      setIsHost(false);
+      setRoom("");
+      setMessages({});
+    }
+  };
+
+  
+
+  return (
+    <div>
+      <Session 
+        onGenerateNewKey={onGenerateNewKey} 
+        onJoinSessionUsingKey={onJoinSessionUsingKey}
+        onLeaveSession={onLeaveSession}
+      />
+      {isSessionActive && (
+        <div>
+          <div className="socket_print">
+            <h1>Socket ID: {socketId}</h1>
+            {isHost && <h2>Room Key: {room}</h2>}
+          </div>
+          <form>
+            <input
+              type="text"
+              value={msg}
+              onChange={handleMsgChange}
+              placeholder="Enter message"
+            />
+            
+          </form>
+          <div>
+            {Object.entries(messages).map(([senderId, msgs]) => (
+              <div key={senderId}>
+                <p>{senderId}:</p>
+                {msgs.map((m, index) => <p key={index}>{m}</p>)}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default App;
+
