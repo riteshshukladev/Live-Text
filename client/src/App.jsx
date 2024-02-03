@@ -134,10 +134,10 @@ import Session from "./Session";
 
 function App() {
   const [socket, setSocket] = useState(null);
-  const [msg, setMsg] = useState("");
+  // const [msg, setMsg] = useState("");
+  const msg = useRef("");
   const [room, setRoom] = useState("");
   const socketId = useRef("");
-  
   const [messages, setMessages] = useState({});
   const [isSessionActive, setIsSessionActive] = useState(false);
   const [isHost, setIsHost] = useState(false);
@@ -198,13 +198,15 @@ function App() {
 
  
 
-  const handleMsgChange = (e) => {
-    const newMsg = e.target.value;
-    setMsg(newMsg);
-    if (socket && room && newMsg.trim()) {
-      socket.emit("message", { msg: newMsg, room, senderId: socket.id });
-    }
-  };
+  // const handleMsgChange = (e) => {
+  //   const newMsg = e.target.value;
+  //   setMsg(newMsg);
+  //   if (socket && room && newMsg.trim()) {
+  //     socket.emit("message", { msg: newMsg, room, senderId: socket.id });
+  //   }
+  // };
+
+  
 
  
 
@@ -231,6 +233,13 @@ function App() {
     }
   };
 
+  const handleMsgChange = (e) => {
+    const newMsg = e.target.value;
+    msg.current = newMsg;
+    if (socket && room && newMsg.trim()) {
+      socket.emit("message", { msg: newMsg, room, senderId: socket.id });
+    }
+  };
   
 
   return (
@@ -249,9 +258,10 @@ function App() {
           <form>
             <input
               type="text"
-              value={msg}
+              // value={msg}
               onChange={handleMsgChange}
               placeholder="Enter message"
+              ref= {msg}
             />
             
           </form>
