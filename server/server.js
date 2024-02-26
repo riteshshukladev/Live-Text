@@ -5,7 +5,9 @@ import { createServer } from "http";
 import { Server as SocketIOServer } from "socket.io";
 import dotenv from 'dotenv';
 import { query } from "./db.js";
-dotenv.config();
+
+const envFile = `.env.${process.env.NODE_ENV || 'development'}`;
+dotenv.config({ path: envFile });
 
 
 
