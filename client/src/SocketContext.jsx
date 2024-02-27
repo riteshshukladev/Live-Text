@@ -22,6 +22,10 @@ const SocketContext = createContext(
 export const useSocket = () => useContext(SocketContext);
 
 export const SocketProvider = ({ children }) => {
+
+const appurl = import.meta.env.VITE_API_URL ;
+console.log(appurl);
+
   const [msg, setMsg] = useState("");
   const [socket, setSocket] = useState(null);
 
@@ -35,6 +39,8 @@ export const SocketProvider = ({ children }) => {
 
   useEffect(() => {
     const newSocket = io("http://localhost:3000");
+    // const newSocket = io("http://142.93.215.117");
+
 
         newSocket.on("connect", () => {
       // setSocketId(newSocket.id);
@@ -141,4 +147,3 @@ const value ={
     </SocketContext.Provider>
   );
 };
-9
