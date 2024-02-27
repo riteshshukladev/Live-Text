@@ -26,5 +26,3 @@ dist-ssr
 .env.production
 
 # Environment variables
-server/.env.production
-server/.env.development
