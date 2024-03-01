@@ -5,6 +5,7 @@ import pkg from "pg";
 import dotenv from "dotenv";
 import fs from "fs";
 import path from "path";
+import { fileURLToPath } from "url";
 const { Pool } = pkg;
 
 // template literal is used to config the .env file based on it's NODE_ENV varible , default = dev;
@@ -14,7 +15,14 @@ const envPath = `.env.${process.env.NODE_ENV || 'development'}`;
 dotenv.config({path:envPath});
 
 
-const certificatePath = path.join("C:", "Users", "Ritesh", "Downloads", "ca-certificate.crt");
+// const certificatePath = path.join("C:", "Users", "Ritesh", "Downloads", "ca-certificate.crt");
+
+
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const certificatePath = path.join( __dirname, 'ssl', 'ca-certificate.crt');
 
 
 

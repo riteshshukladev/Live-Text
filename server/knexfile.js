@@ -3,6 +3,7 @@
 import dotenv from 'dotenv';
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
 
 
 const envFile = `.env.${process.env.NODE_ENV || 'development'}`;
@@ -10,12 +11,18 @@ dotenv.config({ path: envFile });
 
 
 
-const certificatePath = path.join("C:", "Users", "Ritesh", "Downloads", "ca-certificate.crt");
+// const certificatePath = path.join("C:", "Users", "Ritesh", "Downloads", "ca-certificate.crt");
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 
+const certificatePath = path.join( __dirname, 'ssl', 'ca-certificate.crt');
 
-console.log(certificatePath);
-console.log(`The password of ${process.env.NODE_ENV} is ${process.env.DB_PASSWORD}`);
+
+// const certificatePath = path.join(  "ssl", "ca-certificate.crt");
+
+
 
 export default {
   development: {

@@ -38,9 +38,9 @@ console.log(appurl);
   
 
   useEffect(() => {
-    const newSocket = io("http://localhost:3000");
-    // const newSocket = io("http://142.93.215.117");
-
+    const newSocket = io(appurl);
+  
+    // console.log(appurl);
 
         newSocket.on("connect", () => {
       // setSocketId(newSocket.id);

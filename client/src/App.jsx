@@ -17,7 +17,7 @@ export default function App() {
 
   useEffect(() => {
     if (socket.isSessionActive) {
-      console.log(socket.isSessionActive);
+      // console.log(socket.isSessionActive);
       navigate('/chat', { replace: true, state: { socketId:socket.socketId, isHost: socket.isHost, room:socket.room, messages : socket.messages} });
     }
   }, [socket.isSessionActive, navigate, socket.socketId, socket.isHost, socket.room, socket.messages]);
