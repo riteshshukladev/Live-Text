@@ -9,25 +9,12 @@ import { fileURLToPath } from "url";
 const { Pool } = pkg;
 
 // template literal is used to config the .env file based on it's NODE_ENV varible , default = dev;
-
-const envPath = `.env.${process.env.NODE_ENV || 'development'}`;
-// setting the path
-dotenv.config({path:envPath});
-
-
-// const certificatePath = path.join("C:", "Users", "Ritesh", "Downloads", "ca-certificate.crt");
-
-
+dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const certificatePath = path.join( __dirname, 'ssl', 'ca-certificate.crt');
-
-
-
-
-
+const CertificatePath = path.join(__dirname,'ssl','ca-certificate.crt');
 
 
 const pool = new Pool({
@@ -36,9 +23,9 @@ const pool = new Pool({
   database: process.env.DB_DATABASE,
   password: process.env.DB_PASSWORD,
   port: process.env.DB_PORT,
-  ssl: process.env.NODE_ENV === 'production' ? {
-    rejectUnauthorized: true,
-    ca: fs.readFileSync(certificatePath).toString(),
-  } : false,
+  ssl: {
+    rejectUnauthorized:true,
+    ca:fs.readFileSync(CertificatePath).toString(),
+  },
 })
 export const query = (text, params) => pool.query(text, params);
