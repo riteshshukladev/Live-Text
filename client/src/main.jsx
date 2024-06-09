@@ -7,7 +7,7 @@ import { SocketProvider } from "./SocketContext";
 
 
 import Session from "./Session";
-import ChatPage from "./chatPage";
+import ChatPage from "./ChatPage";
 
 
 
